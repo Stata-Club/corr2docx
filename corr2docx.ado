@@ -10,7 +10,10 @@
 * Can only be used in Stata version 15.0 or above
 
 program define corr2docx
-	version 15.0
+	if _caller() < 15.0 {
+		disp as error "this is version `=_caller()' of Stata; it cannot run version 15.0 programs"
+		exit 9
+	}
 	 
 	syntax varlist(numeric min=2) [if] [in] [aweight fweight/] using/, ///
 	[append replace title(string) fmt(string) STAR STAR2(string asis) note(string) NODiagonal ///
@@ -187,7 +190,7 @@ program define corr2docx
 			putdocx save `using', `replace'`append'
 		}
 	}
-	di as txt `"correlation matrix have been written to file {browse `using'}"'
+	di as txt `"correlation matrix have been written to file {browse "`using'"}"'
 end
 
 cap mata mata drop token_number()
